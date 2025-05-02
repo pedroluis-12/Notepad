@@ -6,6 +6,7 @@ plugins {
 android {
     namespace = "com.pedroluis.projects.notepad"
     compileSdk = 35
+    resourcePrefix = "notepad_"
 
     defaultConfig {
         applicationId = "com.pedroluis.projects.notepad"
