@@ -1,0 +1,13 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="notepad_action_settings">Configurações</string>
+    <string name="notepad_list_label">Lista de Notas</string>
+    <string name="notepad_detail_label">Detalhes</string>
+    <string name="notepad_list_empty">Você não tem nenhum item salvo na lista</string>
+    <string name="notepad_detail_title">Título</string>
+    <string name="notepad_detail_description">Descrição</string>
+    <string name="notepad_detail_title_cannot_be_empty">O título não pode estar vazio</string>
+    <string name="notepad_detail_description_cannot_be_empty">A descrição não pode estar vazia</string>
+    <string name="notepad_detail_save">Salvar</string>
+    <string name="notepad_list_no_notes_registered">Nenhuma nota cadastrada.</string>
+</resources>

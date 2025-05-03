@@ -1,0 +1,36 @@
+<?xml version="1.0" encoding="utf-8"?>
+<navigation xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:id="@+id/nav_graph"
+    app:startDestination="@id/ListFragment">
+
+    <fragment
+        android:id="@+id/ListFragment"
+        android:name="com.pedroluis.projects.notepad.features.list.view.imperative.fragment.ListFragment"
+        android:label="@string/notepad_list_label"
+        tools:layout="@layout/notepad_list_fragment">
+
+        <action
+            android:id="@+id/action_ListFragment_to_DetailFragment"
+            app:enterAnim="@anim/notepad_slide_in_right"
+            app:exitAnim="@anim/notepad_slide_out_left"
+            app:popEnterAnim="@anim/notepad_slide_in_left"
+            app:popExitAnim="@anim/notepad_slide_out_right"
+            app:destination="@id/DetailFragment" />
+    </fragment>
+    <fragment
+        android:id="@+id/DetailFragment"
+        android:name="com.pedroluis.projects.notepad.features.detail.view.imperative.DetailFragment"
+        android:label="@string/notepad_detail_label"
+        tools:layout="@layout/notepad_detail_fragment">
+
+        <action
+            android:id="@+id/action_DetailFragment_to_ListFragment"
+            app:enterAnim="@anim/notepad_slide_in_left"
+            app:exitAnim="@anim/notepad_slide_out_right"
+            app:popEnterAnim="@anim/notepad_slide_in_right"
+            app:popExitAnim="@anim/notepad_slide_out_left"
+            app:destination="@id/ListFragment" />
+    </fragment>
+</navigation>
