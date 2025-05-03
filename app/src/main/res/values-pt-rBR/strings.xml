@@ -1,0 +1,9 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="notepad_action_settings">Configurações</string>
+    <string name="notepad_list_label">Lista de Notas</string>
+    <string name="notepad_detail_label">Detalhes</string>
+    <string name="notepad_list_empty">Você não tem nenhum item salvo na lista</string>
+    <string name="notepad_detail_title">Título</string>
+    <string name="notepad_detail_description">Descrição</string>
+</resources>
