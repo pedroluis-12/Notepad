@@ -11,4 +11,5 @@
     <string name="notepad_detail_title_cannot_be_empty">Title cannot be empty</string>
     <string name="notepad_detail_description_cannot_be_empty">Description cannot be empty</string>
     <string name="notepad_detail_save">Save</string>
+    <string name="notepad_list_no_notes_registered">No notes registered.</string>
 </resources>

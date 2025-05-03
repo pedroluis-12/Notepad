@@ -1,5 +1,6 @@
 package com.pedroluis.projects.notepad.features.list.view.imperative.adapter
 
+import android.annotation.SuppressLint
 import android.view.LayoutInflater
 import android.view.ViewGroup
 import androidx.recyclerview.widget.RecyclerView
@@ -22,5 +23,12 @@ internal class ListNoteAdapter(
     override fun onBindViewHolder(holder: RecyclerView.ViewHolder, position: Int) {
         val item = listNotes[position]
         (holder as ListNoteViewHolder).bind(item.title, item.description)
+    }
+
+    @SuppressLint("NotifyDataSetChanged")
+    fun setAddList(list: List<NotepadModel>) {
+        listNotes.clear()
+        listNotes.addAll(list)
+        notifyDataSetChanged()
     }
 }

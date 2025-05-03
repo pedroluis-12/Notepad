@@ -11,11 +11,12 @@ import androidx.lifecycle.Lifecycle
 import androidx.lifecycle.ViewModelProvider
 import androidx.lifecycle.lifecycleScope
 import androidx.lifecycle.repeatOnLifecycle
+import androidx.navigation.fragment.findNavController
 import com.pedroluis.projects.notepad.R
 import com.pedroluis.projects.notepad.databinding.NotepadDetailFragmentBinding
-import com.pedroluis.projects.notepad.features.detail.usecase.state.DetailUseCaseState
 import com.pedroluis.projects.notepad.features.detail.viewmodel.DetailViewModel
 import com.pedroluis.projects.notepad.features.detail.viewmodel.factory.DetailViewModelFactory
+import com.pedroluis.projects.notepad.features.detail.viewmodel.state.DetailViewState
 import kotlinx.coroutines.cancel
 import kotlinx.coroutines.launch
 
@@ -27,8 +28,7 @@ class DetailFragment : Fragment() {
     private var viewModel: DetailViewModel? = null
 
     override fun onCreateView(
-        inflater: LayoutInflater, container: ViewGroup?,
-        savedInstanceState: Bundle?
+        inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?
     ): View {
         _binding = NotepadDetailFragmentBinding.inflate(inflater, container, false)
         return binding.root
@@ -37,37 +37,39 @@ class DetailFragment : Fragment() {
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
 
+        setListeners()
+        setViewModel()
+    }
+
+    private fun setListeners() {
         binding.saveButton.setOnClickListener {
-            validateInputs()
+            viewModel?.saveNote(
+                title =  binding.titleEditText.text.toString().trim(),
+                description = binding.descriptionEditText.text.toString().trim()
+            )
         }
 
-        // Clear error on input change
         binding.titleEditText.addTextChangedListener(object : TextWatcher {
             override fun beforeTextChanged(s: CharSequence?, start: Int, count: Int, after: Int) {}
-
             override fun onTextChanged(s: CharSequence?, start: Int, before: Int, count: Int) {
                 binding.titleInputLayout.isErrorEnabled = false
             }
-
             override fun afterTextChanged(s: Editable?) {}
         })
 
         binding.descriptionEditText.addTextChangedListener(object : TextWatcher {
             override fun beforeTextChanged(s: CharSequence?, start: Int, count: Int, after: Int) {}
-
             override fun onTextChanged(s: CharSequence?, start: Int, before: Int, count: Int) {
                 binding.descriptionInputLayout.isErrorEnabled = false
             }
-
             override fun afterTextChanged(s: Editable?) {}
         })
-
-        setViewModel()
     }
 
     private fun setViewModel() {
-        val viewModelFactory = DetailViewModelFactory()
-        viewModel = ViewModelProvider(this, viewModelFactory)[DetailViewModel::class.java]
+        viewModel = ViewModelProvider(
+            this, DetailViewModelFactory()
+        )[DetailViewModel::class.java]
 
         setObserveDetailResult()
     }
@@ -77,49 +79,40 @@ class DetailFragment : Fragment() {
             repeatOnLifecycle(Lifecycle.State.STARTED) {
                 viewModel?.dataResult?.collect { result ->
                     when (result) {
-                        DetailUseCaseState.Success -> {
-                            val title = binding.titleEditText.text.toString().trim()
-                            val description = binding.descriptionEditText.text.toString().trim()
-                            saveNote(title, description)
-                        }
-
-                        is DetailUseCaseState.ErrorGeneral -> {
-                            binding.titleInputLayout.isErrorEnabled = true
-                            binding.titleInputLayout.error = getString(R.string.notepad_detail_title_cannot_be_empty)
-                            binding.descriptionInputLayout.isErrorEnabled = true
-                            binding.descriptionInputLayout.error = getString(R.string.notepad_detail_description_cannot_be_empty)
-                        }
-                        is DetailUseCaseState.ErrorTitle -> {
-                            binding.titleInputLayout.isErrorEnabled = true
-                            binding.titleInputLayout.error = getString(R.string.notepad_detail_title_cannot_be_empty)
-                        }
-                        is DetailUseCaseState.ErrorDescription -> {
-                            binding.descriptionInputLayout.isErrorEnabled = true
-                            binding.descriptionInputLayout.error = getString(R.string.notepad_detail_description_cannot_be_empty)
-                        }
+                        is DetailViewState.DisplaySuccess -> setupSuccess()
+                        is DetailViewState.DisplayErrorGeneral -> setupErrorGeneral()
+                        is DetailViewState.DisplayErrorTitle -> setupErrorTitle()
+                        is DetailViewState.DisplayErrorDescription -> setupErrorDescription()
                     }
                 }
             }
         }
     }
 
-    private fun validateInputs() {
-        val title = binding.titleEditText.text.toString().trim()
-        val description = binding.descriptionEditText.text.toString().trim()
-        viewModel?.saveNote(title, description)
+    private fun setupErrorGeneral() {
+        setupErrorTitle()
+        setupErrorDescription()
     }
 
-    private fun saveNote(title: String, description: String) {
-        // TODO: Implement your logic to save the note here.
-        // For example, you might want to:
-        // 1. Create a data object for your note.
-        // 2. Save it to a database (Room, etc.).
-        // 3. Send it to a server.
-        // 4. Navigate back to the list.
-
-        println("Note saved: Title - $title, Description - $description")
+    private fun setupErrorDescription() {
+        binding.descriptionInputLayout.isErrorEnabled = true
+        binding.descriptionInputLayout.error =
+            getString(R.string.notepad_detail_description_cannot_be_empty)
     }
 
+    private fun setupErrorTitle() {
+        binding.titleInputLayout.isErrorEnabled = true
+        binding.titleInputLayout.error =
+            getString(R.string.notepad_detail_title_cannot_be_empty)
+    }
+
+    private fun setupSuccess() {
+        val navController = findNavController()
+        navController.previousBackStackEntry?.savedStateHandle?.set(
+            "key", "value that needs to be passed"
+        )
+        navController.popBackStack()
+    }
 
     override fun onDestroyView() {
         super.onDestroyView()

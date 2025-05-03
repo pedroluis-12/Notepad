@@ -1,8 +1,8 @@
 package com.pedroluis.projects.notepad.features.detail.usecase.state
 
 sealed class DetailUseCaseState {
-    object Success : DetailUseCaseState()
-    object ErrorTitle : DetailUseCaseState()
-    object ErrorDescription : DetailUseCaseState()
-    object ErrorGeneral : DetailUseCaseState()
+    data object Success : DetailUseCaseState()
+    data object ErrorTitle : DetailUseCaseState()
+    data object ErrorDescription : DetailUseCaseState()
+    data object ErrorGeneral : DetailUseCaseState()
 }

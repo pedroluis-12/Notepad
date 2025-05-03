@@ -9,4 +9,5 @@
     <string name="notepad_detail_title_cannot_be_empty">O título não pode estar vazio</string>
     <string name="notepad_detail_description_cannot_be_empty">A descrição não pode estar vazia</string>
     <string name="notepad_detail_save">Salvar</string>
+    <string name="notepad_list_no_notes_registered">Nenhuma nota cadastrada.</string>
 </resources>
