@@ -11,8 +11,8 @@ import androidx.lifecycle.Lifecycle
 import androidx.lifecycle.ViewModelProvider
 import androidx.lifecycle.lifecycleScope
 import androidx.lifecycle.repeatOnLifecycle
+import com.pedroluis.projects.notepad.R
 import com.pedroluis.projects.notepad.databinding.NotepadDetailFragmentBinding
-import com.pedroluis.projects.notepad.features.detail.model.DetailErrorTypeEnum
 import com.pedroluis.projects.notepad.features.detail.usecase.state.DetailUseCaseState
 import com.pedroluis.projects.notepad.features.detail.viewmodel.DetailViewModel
 import com.pedroluis.projects.notepad.features.detail.viewmodel.factory.DetailViewModelFactory
@@ -78,31 +78,24 @@ class DetailFragment : Fragment() {
                 viewModel?.dataResult?.collect { result ->
                     when (result) {
                         DetailUseCaseState.Success -> {
-                            // Proceed with saving the note
                             val title = binding.titleEditText.text.toString().trim()
                             val description = binding.descriptionEditText.text.toString().trim()
                             saveNote(title, description)
                         }
 
-                        is DetailUseCaseState.Error -> {
-                            when (result.errorType) {
-                                DetailErrorTypeEnum.EMPTY_TITLE -> {
-                                    binding.titleInputLayout.isErrorEnabled = true
-                                    binding.titleInputLayout.error = "Title cannot be empty"
-                                }
-
-                                DetailErrorTypeEnum.EMPTY_DESCRIPTION -> {
-                                    binding.descriptionInputLayout.isErrorEnabled = true
-                                    binding.descriptionInputLayout.error = "Description cannot be empty"
-                                }
-
-                                DetailErrorTypeEnum.EMPTY_BOTH -> {
-                                    binding.titleInputLayout.isErrorEnabled = true
-                                    binding.titleInputLayout.error = "Title cannot be empty"
-                                    binding.descriptionInputLayout.isErrorEnabled = true
-                                    binding.descriptionInputLayout.error = "Description cannot be empty"
-                                }
-                            }
+                        is DetailUseCaseState.ErrorGeneral -> {
+                            binding.titleInputLayout.isErrorEnabled = true
+                            binding.titleInputLayout.error = getString(R.string.notepad_detail_title_cannot_be_empty)
+                            binding.descriptionInputLayout.isErrorEnabled = true
+                            binding.descriptionInputLayout.error = getString(R.string.notepad_detail_description_cannot_be_empty)
+                        }
+                        is DetailUseCaseState.ErrorTitle -> {
+                            binding.titleInputLayout.isErrorEnabled = true
+                            binding.titleInputLayout.error = getString(R.string.notepad_detail_title_cannot_be_empty)
+                        }
+                        is DetailUseCaseState.ErrorDescription -> {
+                            binding.descriptionInputLayout.isErrorEnabled = true
+                            binding.descriptionInputLayout.error = getString(R.string.notepad_detail_description_cannot_be_empty)
                         }
                     }
                 }

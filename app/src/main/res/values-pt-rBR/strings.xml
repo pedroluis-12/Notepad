@@ -6,4 +6,7 @@
     <string name="notepad_list_empty">Você não tem nenhum item salvo na lista</string>
     <string name="notepad_detail_title">Título</string>
     <string name="notepad_detail_description">Descrição</string>
+    <string name="notepad_detail_title_cannot_be_empty">O título não pode estar vazio</string>
+    <string name="notepad_detail_description_cannot_be_empty">A descrição não pode estar vazia</string>
+    <string name="notepad_detail_save">Salvar</string>
 </resources>
