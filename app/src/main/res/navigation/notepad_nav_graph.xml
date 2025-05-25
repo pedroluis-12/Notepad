@@ -7,30 +7,41 @@
 
     <fragment
         android:id="@+id/ListFragment"
-        android:name="com.pedroluis.projects.notepad.features.list.view.imperative.fragment.ListFragment"
+        android:name="com.pedroluis.projects.notepad.features.list.view.fragment.ListFragment"
         android:label="@string/notepad_list_label"
         tools:layout="@layout/notepad_list_fragment">
 
         <action
             android:id="@+id/action_ListFragment_to_DetailFragment"
+            app:destination="@id/DetailFragment"
             app:enterAnim="@anim/notepad_slide_in_right"
             app:exitAnim="@anim/notepad_slide_out_left"
             app:popEnterAnim="@anim/notepad_slide_in_left"
-            app:popExitAnim="@anim/notepad_slide_out_right"
-            app:destination="@id/DetailFragment" />
+            app:popExitAnim="@anim/notepad_slide_out_right" >
+            <argument
+                android:name="id"
+                app:argType="integer" />
+            <argument
+                android:name="title"
+                app:argType="string" />
+            <argument
+                android:name="description"
+                app:argType="string" />
+        </action>
     </fragment>
     <fragment
         android:id="@+id/DetailFragment"
-        android:name="com.pedroluis.projects.notepad.features.detail.view.imperative.DetailFragment"
+        android:name="com.pedroluis.projects.notepad.features.detail.view.fragment.DetailFragment"
         android:label="@string/notepad_detail_label"
         tools:layout="@layout/notepad_detail_fragment">
 
         <action
             android:id="@+id/action_DetailFragment_to_ListFragment"
+            app:destination="@id/ListFragment"
             app:enterAnim="@anim/notepad_slide_in_left"
             app:exitAnim="@anim/notepad_slide_out_right"
             app:popEnterAnim="@anim/notepad_slide_in_right"
-            app:popExitAnim="@anim/notepad_slide_out_left"
-            app:destination="@id/ListFragment" />
+            app:popExitAnim="@anim/notepad_slide_out_left"/>
+
     </fragment>
 </navigation>

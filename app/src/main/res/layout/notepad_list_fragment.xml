@@ -4,7 +4,7 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    tools:context=".features.list.view.imperative.fragment.ListFragment">
+    tools:context=".features.list.view.fragment.ListFragment">
 
     <androidx.recyclerview.widget.RecyclerView
         android:id="@+id/list_note"
@@ -23,7 +23,7 @@
         android:text="@string/notepad_list_no_notes_registered"
         android:textColor="@android:color/black"
         android:textSize="26sp"
-        android:visibility="visible"
+        android:visibility="gone"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"

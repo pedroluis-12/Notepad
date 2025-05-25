@@ -9,5 +9,5 @@ internal interface DetailUseCase {
         index: Int? = null,
         title: String,
         description: String
-    ): Flow<DetailUseCaseState>
+    ): DetailUseCaseState
 }
