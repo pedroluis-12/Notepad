@@ -1,4 +1,4 @@
-package com.pedroluis.projects.notepad.features.list.view.imperative.adapter
+package com.pedroluis.projects.notepad.features.list.view.adapter
 
 import android.annotation.SuppressLint
 import android.view.LayoutInflater
@@ -6,7 +6,7 @@ import android.view.ViewGroup
 import androidx.recyclerview.widget.RecyclerView
 import com.pedroluis.projects.notepad.commons.model.NotepadModel
 import com.pedroluis.projects.notepad.databinding.NotepadListViewholderBinding
-import com.pedroluis.projects.notepad.features.list.view.imperative.adapter.viewholder.ListNoteViewHolder
+import com.pedroluis.projects.notepad.features.list.view.adapter.viewholder.ListNoteViewHolder
 
 internal class ListNoteAdapter(
     private val listNotes: MutableList<NotepadModel>
@@ -22,7 +22,11 @@ internal class ListNoteAdapter(
 
     override fun onBindViewHolder(holder: RecyclerView.ViewHolder, position: Int) {
         val item = listNotes[position]
-        (holder as ListNoteViewHolder).bind(item.title, item.description)
+        (holder as ListNoteViewHolder).bind(item.id, item.title, item.description)
+    }
+
+    fun getNoteAt(position: Int): NotepadModel {
+        return listNotes[position]
     }
 
     @SuppressLint("NotifyDataSetChanged")
@@ -30,5 +34,10 @@ internal class ListNoteAdapter(
         listNotes.clear()
         listNotes.addAll(list)
         notifyDataSetChanged()
+    }
+
+    fun removeList(position: Int) {
+        listNotes.removeAt(position)
+        notifyItemRemoved(position)
     }
 }

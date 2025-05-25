@@ -1,9 +1,11 @@
 <resources>
     <string name="notepad_app_name" translatable="false">Notepad</string>
-    <string name="notepad_action_settings">Settings</string>
 
     <string name="notepad_list_label">List of Notes</string>
     <string name="notepad_list_empty">You do not have any items saved in the list</string>
+    <string name="notepad_list_no_notes_registered">No notes registered.</string>
+    <string name="notepad_list_deleted">Note deleted</string>
+    <string name="notepad_list_deleted_error">Could not delete item from notes list. Please try again later.</string>
 
     <string name="notepad_detail_label">Detail</string>
     <string name="notepad_detail_title">Title</string>
@@ -11,5 +13,4 @@
     <string name="notepad_detail_title_cannot_be_empty">Title cannot be empty</string>
     <string name="notepad_detail_description_cannot_be_empty">Description cannot be empty</string>
     <string name="notepad_detail_save">Save</string>
-    <string name="notepad_list_no_notes_registered">No notes registered.</string>
 </resources>

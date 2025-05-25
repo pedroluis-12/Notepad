@@ -1,5 +1,7 @@
 package com.pedroluis.projects.notepad.features.detail.viewmodel
 
+import androidx.lifecycle.LiveData
+import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.pedroluis.projects.notepad.features.detail.usecase.DetailUseCase
@@ -14,36 +16,27 @@ internal class DetailViewModel(
     private val detailUseCase: DetailUseCase
 ): ViewModel() {
 
-    private val _detailResult = MutableSharedFlow<DetailViewState>()
-    val dataResult: SharedFlow<DetailViewState> = _detailResult
+    private val _detailResult = MutableLiveData<DetailViewState>()
+    val dataResult: LiveData<DetailViewState> = _detailResult
 
     fun saveNote(index: Int? = null, title: String, description: String) {
-        viewModelScope.launch {
-            detailUseCase.saveNote(index, title, description).collect { result ->
-                handleDetailResult(result)
-            }
-        }
+        val result = detailUseCase.saveNote(index, title, description)
+        handleDetailResult(result)
     }
 
-    private suspend fun handleDetailResult(result: DetailUseCaseState) {
+    private fun handleDetailResult(result: DetailUseCaseState) {
         when (result) {
-            DetailUseCaseState.Success -> {
-                _detailResult.emit(DetailViewState.DisplaySuccess)
-            }
-            DetailUseCaseState.ErrorTitle -> {
-                _detailResult.emit(DetailViewState.DisplayErrorTitle)
-            }
-            DetailUseCaseState.ErrorDescription -> {
-                _detailResult.emit(DetailViewState.DisplayErrorDescription)
-            }
-            DetailUseCaseState.ErrorGeneral -> {
-                _detailResult.emit(DetailViewState.DisplayErrorGeneral)
-            }
-        }
-    }
+            DetailUseCaseState.ErrorTitle ->
+                _detailResult.value = DetailViewState.DisplayErrorTitle
 
-    override fun onCleared() {
-        super.onCleared()
-        viewModelScope.cancel()
+            DetailUseCaseState.ErrorDescription ->
+                _detailResult.value = DetailViewState.DisplayErrorDescription
+
+            DetailUseCaseState.ErrorGeneral ->
+                _detailResult.value = DetailViewState.DisplayErrorGeneral
+
+            DetailUseCaseState.Success ->
+                _detailResult.value = DetailViewState.DisplaySuccess
+        }
     }
 }

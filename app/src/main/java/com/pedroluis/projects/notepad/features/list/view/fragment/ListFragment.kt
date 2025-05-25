@@ -1,30 +1,32 @@
-package com.pedroluis.projects.notepad.features.list.view.imperative.fragment
+package com.pedroluis.projects.notepad.features.list.view.fragment
 
 import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
-import android.widget.Toast
 import androidx.fragment.app.Fragment
-import androidx.lifecycle.Lifecycle
 import androidx.lifecycle.ViewModelProvider
 import androidx.lifecycle.flowWithLifecycle
 import androidx.lifecycle.lifecycleScope
-import androidx.lifecycle.repeatOnLifecycle
+import androidx.navigation.NavController
 import androidx.navigation.fragment.findNavController
+import androidx.recyclerview.widget.ItemTouchHelper
 import androidx.recyclerview.widget.LinearLayoutManager
+import androidx.recyclerview.widget.RecyclerView
+import com.google.android.material.snackbar.Snackbar
 import com.pedroluis.projects.notepad.R
+import com.pedroluis.projects.notepad.commons.UPDATE_LIST
 import com.pedroluis.projects.notepad.commons.model.NotepadModel
 import com.pedroluis.projects.notepad.databinding.NotepadListFragmentBinding
-import com.pedroluis.projects.notepad.features.list.view.imperative.adapter.ListNoteAdapter
+import com.pedroluis.projects.notepad.features.list.view.adapter.ListNoteAdapter
 import com.pedroluis.projects.notepad.features.list.viewmodel.ListViewModel
 import com.pedroluis.projects.notepad.features.list.viewmodel.factory.ListViewModelFactory
 import com.pedroluis.projects.notepad.features.list.viewmodel.state.ListDeleteViewState
 import com.pedroluis.projects.notepad.features.list.viewmodel.state.ListGetViewState
-import kotlinx.coroutines.cancel
 import kotlinx.coroutines.flow.launchIn
 import kotlinx.coroutines.flow.onEach
-import kotlinx.coroutines.launch
+
+private const val INDEX_ZERO = 0
 
 class ListFragment : Fragment() {
 
@@ -55,51 +57,43 @@ class ListFragment : Fragment() {
     }
 
     private fun setViewModel(): ListViewModel = ViewModelProvider(
-            this, ListViewModelFactory()
-        )[ListViewModel::class.java]
+        this, ListViewModelFactory()
+    )[ListViewModel::class.java]
 
     private fun setObserveDataFromBack() {
         val navController = findNavController()
         navController.currentBackStackEntry
             ?.savedStateHandle
-            ?.getStateFlow("key", "")
+            ?.getStateFlow(UPDATE_LIST, false)
             ?.flowWithLifecycle(this.lifecycle)
-            ?.onEach { result ->
-                if (result.isNotEmpty()) {
-                    Toast.makeText(context, result, Toast.LENGTH_LONG).show()
-                    navController.currentBackStackEntry?.savedStateHandle?.remove<String>("key")
-                }
-            }?.launchIn(lifecycleScope)
+            ?.onEach { result -> updateList(result, navController) }
+            ?.launchIn(lifecycleScope)
     }
 
     private fun setObserveListGetViewModel() {
-        viewLifecycleOwner.lifecycleScope.launch {
-            viewLifecycleOwner.lifecycle.repeatOnLifecycle(Lifecycle.State.STARTED) {
-                viewModel.listGetResult.collect { value ->
-                    when (value) {
-                        is ListGetViewState.DisplaySuccess -> setListSuccess(value.notes)
-                        is ListGetViewState.DisplayEmptyList -> setListEmpty()
-                    }
-                }
+        viewModel.listGetResult.observe(viewLifecycleOwner) { value ->
+            when (value) {
+                is ListGetViewState.DisplaySuccess -> setListSuccess(value.notes)
+                is ListGetViewState.DisplayEmptyList -> setListEmpty()
             }
         }
     }
 
     private fun setObserveListDeleteViewModel() {
-        viewLifecycleOwner.lifecycleScope.launch {
-            viewLifecycleOwner.lifecycle.repeatOnLifecycle(Lifecycle.State.STARTED) {
-                viewModel.listDeleteResult.collect { value ->
-                    when (value) {
-                        is ListDeleteViewState.DisplaySuccess -> {}
-                        is ListDeleteViewState.DisplayError -> {}
-                    }
-                }
+        viewModel.listDeleteResult.observe(viewLifecycleOwner) { value ->
+            when (value) {
+                is ListDeleteViewState.DisplayDeleteSuccess ->
+                    listAdapter.also { it?.removeList(value.index) }
+                is ListDeleteViewState.DisplayDeleteLastItem ->
+                    setLastItemListDeleted()
+                is ListDeleteViewState.DisplayError ->
+                    setItemListDeletedError()
             }
         }
     }
 
     private fun setViews() {
-        binding.fabAddNote.setOnClickListener { button ->
+        binding.fabAddNote.setOnClickListener {
             findNavController().navigate(R.id.action_ListFragment_to_DetailFragment)
         }
 
@@ -108,8 +102,12 @@ class ListFragment : Fragment() {
             layoutManager = LinearLayoutManager(
                 requireContext(), LinearLayoutManager.VERTICAL, false
             )
-            adapter = adapter
+            adapter = listAdapter
         }
+
+        ItemTouchHelper(
+            setDeleteListItem()
+        ).attachToRecyclerView(binding.listNote)
     }
 
     private fun setListEmpty() {
@@ -127,9 +125,52 @@ class ListFragment : Fragment() {
         listAdapter?.setAddList(notes)
     }
 
+    private fun setLastItemListDeleted() {
+        listAdapter.also { it?.removeList(INDEX_ZERO) }
+        setListEmpty()
+    }
+
+    private fun setItemListDeletedError() {
+        Snackbar.make(
+            binding.root,
+            getString(R.string.notepad_list_deleted_error),
+            Snackbar.LENGTH_LONG
+        ).show()
+        viewModel.getNotes()
+    }
+
+    private fun updateList(isUpdate: Boolean, navController: NavController) {
+        if (isUpdate) {
+            viewModel.getNotes()
+            navController.currentBackStackEntry?.savedStateHandle?.remove<String>(UPDATE_LIST)
+        }
+    }
+
+    private fun setDeleteListItem() = object : ItemTouchHelper.SimpleCallback(
+        INDEX_ZERO, ItemTouchHelper.LEFT or ItemTouchHelper.RIGHT
+    ) {
+
+        override fun onMove(
+            recyclerView: RecyclerView,
+            viewHolder: RecyclerView.ViewHolder,
+            target: RecyclerView.ViewHolder
+        ): Boolean = false
+
+        override fun onSwiped(viewHolder: RecyclerView.ViewHolder, direction: Int) {
+            val position = viewHolder.adapterPosition
+            val noteToDelete = listAdapter?.getNoteAt(position)
+
+            viewModel.deleteNote(position, noteToDelete)
+            Snackbar.make(
+                binding.root,
+                getString(R.string.notepad_list_deleted),
+                Snackbar.LENGTH_LONG
+            ).show()
+        }
+    }
+
     override fun onDestroyView() {
         super.onDestroyView()
-        viewLifecycleOwner.lifecycleScope.cancel()
         _binding = null
     }
 }

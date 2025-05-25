@@ -8,6 +8,7 @@ internal sealed class ListGetViewState {
 }
 
 internal sealed class ListDeleteViewState {
-    data object DisplaySuccess : ListDeleteViewState()
+    data class DisplayDeleteSuccess(val index: Int) : ListDeleteViewState()
+    data object DisplayDeleteLastItem : ListDeleteViewState()
     data object DisplayError : ListDeleteViewState()
 }
