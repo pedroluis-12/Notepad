@@ -5,9 +5,11 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import androidx.fragment.app.Fragment
+import androidx.lifecycle.Lifecycle
 import androidx.lifecycle.ViewModelProvider
 import androidx.lifecycle.flowWithLifecycle
 import androidx.lifecycle.lifecycleScope
+import androidx.lifecycle.repeatOnLifecycle
 import androidx.navigation.NavController
 import androidx.navigation.fragment.findNavController
 import androidx.recyclerview.widget.ItemTouchHelper
@@ -23,8 +25,11 @@ import com.pedroluis.projects.notepad.features.list.viewmodel.ListViewModel
 import com.pedroluis.projects.notepad.features.list.viewmodel.factory.ListViewModelFactory
 import com.pedroluis.projects.notepad.features.list.viewmodel.state.ListDeleteViewState
 import com.pedroluis.projects.notepad.features.list.viewmodel.state.ListGetViewState
+import kotlinx.coroutines.flow.collect
+import kotlinx.coroutines.flow.collectLatest
 import kotlinx.coroutines.flow.launchIn
 import kotlinx.coroutines.flow.onEach
+import kotlinx.coroutines.launch
 
 private const val INDEX_ZERO = 0
 
@@ -49,7 +54,6 @@ class ListFragment : Fragment() {
 
         setViews()
 
-        setObserveDataFromBack()
         setObserveListGetViewModel()
         setObserveListDeleteViewModel()
 
@@ -59,16 +63,6 @@ class ListFragment : Fragment() {
     private fun setViewModel(): ListViewModel = ViewModelProvider(
         this, ListViewModelFactory(this.requireActivity().application)
     )[ListViewModel::class.java]
-
-    private fun setObserveDataFromBack() {
-        val navController = findNavController()
-        navController.currentBackStackEntry
-            ?.savedStateHandle
-            ?.getStateFlow(UPDATE_LIST, false)
-            ?.flowWithLifecycle(this.lifecycle)
-            ?.onEach { result -> updateList(result, navController) }
-            ?.launchIn(lifecycleScope)
-    }
 
     private fun setObserveListGetViewModel() {
         viewModel.listGetResult.observe(viewLifecycleOwner) { value ->
@@ -83,9 +77,7 @@ class ListFragment : Fragment() {
         viewModel.listDeleteResult.observe(viewLifecycleOwner) { value ->
             when (value) {
                 is ListDeleteViewState.DisplayDeleteSuccess ->
-                    listAdapter.also { it?.removeList(value.index) }
-                is ListDeleteViewState.DisplayDeleteLastItem ->
-                    setLastItemListDeleted()
+                   viewModel.getNotes()
                 is ListDeleteViewState.DisplayError ->
                     setItemListDeletedError()
             }
@@ -104,8 +96,7 @@ class ListFragment : Fragment() {
             )
             adapter = listAdapter
         }
-        val itemTouchHelper = setDeleteListItem()
-        ItemTouchHelper(itemTouchHelper).attachToRecyclerView(binding.listNote)
+        ItemTouchHelper(setDeleteListItem()).attachToRecyclerView(binding.listNote)
     }
 
     private fun setListEmpty() {
@@ -123,11 +114,6 @@ class ListFragment : Fragment() {
         }
     }
 
-    private fun setLastItemListDeleted() {
-        listAdapter.also { it?.removeList(INDEX_ZERO) }
-        setListEmpty()
-    }
-
     private fun setItemListDeletedError() {
         Snackbar.make(
             binding.root,
@@ -135,13 +121,6 @@ class ListFragment : Fragment() {
             Snackbar.LENGTH_LONG
         ).show()
         viewModel.getNotes()
-    }
-
-    private fun updateList(isUpdate: Boolean, navController: NavController) {
-        if (isUpdate) {
-            viewModel.getNotes()
-            navController.currentBackStackEntry?.savedStateHandle?.remove<Boolean>(UPDATE_LIST)
-        }
     }
 
     private fun setDeleteListItem() = object : ItemTouchHelper.SimpleCallback(
@@ -158,6 +137,7 @@ class ListFragment : Fragment() {
             val position = viewHolder.adapterPosition
             val noteToDelete = listAdapter?.getNoteAt(position)
 
+           viewModel.deleteNote(position, noteToDelete?.id)
             Snackbar.make(
                 binding.root,
                 getString(R.string.notepad_list_deleted),

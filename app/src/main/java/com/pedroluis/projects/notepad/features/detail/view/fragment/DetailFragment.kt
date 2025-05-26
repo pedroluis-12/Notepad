@@ -115,11 +115,7 @@ class DetailFragment : Fragment() {
     }
 
     private fun setupSuccess() {
-        val navController = findNavController()
-        navController.previousBackStackEntry?.savedStateHandle?.set(
-            UPDATE_LIST, true
-        )
-        navController.popBackStack()
+        findNavController().popBackStack()
     }
 
     override fun onDestroyView() {

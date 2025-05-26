@@ -35,9 +35,4 @@ internal class ListNoteAdapter(
         listNotes.addAll(list)
         notifyDataSetChanged()
     }
-
-    fun removeList(position: Int) {
-        listNotes.removeAt(position)
-        notifyItemRemoved(position)
-    }
 }
