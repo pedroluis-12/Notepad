@@ -22,21 +22,10 @@ internal class ListUseCaseImpl(
 
     override fun deleteNote(index:Int, id: String?): ListDeleteUseCaseState {
         return if (id != null) {
-            deleteItem(index, id)
+            repository.deleteNote(application, id)
+            ListDeleteUseCaseState.DeleteSuccess(index)
         } else {
             ListDeleteUseCaseState.Error
         }
-    }
-
-    private fun deleteItem(index: Int, id: String): ListDeleteUseCaseState {
-        repository.deleteNote(application, id)
-
-        val listNotes = repository.getNotes(application)
-        return if (listNotes.isEmpty()) {
-            ListDeleteUseCaseState.DeleteLastItem
-        } else {
-            ListDeleteUseCaseState.DeleteSuccess(index)
-        }
-
     }
 }

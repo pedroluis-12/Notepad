@@ -9,6 +9,5 @@ sealed class ListGetUseCaseState {
 
 sealed class ListDeleteUseCaseState {
     data class DeleteSuccess(val index: Int) : ListDeleteUseCaseState()
-    data object DeleteLastItem : ListDeleteUseCaseState()
     data object Error : ListDeleteUseCaseState()
 }

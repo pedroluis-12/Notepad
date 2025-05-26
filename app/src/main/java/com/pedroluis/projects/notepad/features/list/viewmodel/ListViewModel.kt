@@ -45,8 +45,6 @@ internal class ListViewModel(
         when (result) {
             is ListDeleteUseCaseState.DeleteSuccess ->
                 _listDeleteResult.value = ListDeleteViewState.DisplayDeleteSuccess(result.index)
-            is ListDeleteUseCaseState.DeleteLastItem ->
-                _listDeleteResult.value = ListDeleteViewState.DisplayDeleteLastItem
             is ListDeleteUseCaseState.Error ->
                 _listDeleteResult.value = ListDeleteViewState.DisplayError
         }
