@@ -15,13 +15,13 @@ internal class ListNoteViewHolder(
     private val binding: NotepadListViewholderBinding
 ): RecyclerView.ViewHolder(binding.root) {
 
-    fun bind(id: Int, title: String, description: String) {
+    fun bind(id: String, title: String, description: String) {
         binding.apply {
             titleNote.text = title
             descriptionNote.text = description
 
             val bundle = Bundle().apply {
-                putInt(ID_FROM_LIST, id)
+                putString(ID_FROM_LIST, id)
                 putString(TITLE_FROM_LIST, title)
                 putString(DESCRIPTION_FROM_LIST, description)
             }

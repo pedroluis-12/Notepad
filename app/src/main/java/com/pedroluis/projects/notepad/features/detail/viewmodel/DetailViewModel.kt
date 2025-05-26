@@ -19,8 +19,8 @@ internal class DetailViewModel(
     private val _detailResult = MutableLiveData<DetailViewState>()
     val dataResult: LiveData<DetailViewState> = _detailResult
 
-    fun saveNote(index: Int? = null, title: String, description: String) {
-        val result = detailUseCase.saveNote(index, title, description)
+    fun saveNote(id: String? = null, title: String, description: String) {
+        val result = detailUseCase.saveNote(id, title, description)
         handleDetailResult(result)
     }
 

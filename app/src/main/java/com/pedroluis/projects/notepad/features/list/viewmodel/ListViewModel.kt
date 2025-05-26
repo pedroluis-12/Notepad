@@ -26,8 +26,8 @@ internal class ListViewModel(
         handleListGetResult(result)
     }
 
-    fun deleteNote(index: Int, note: NotepadModel?) {
-        val result = listUseCase.deleteNote(index, note)
+    fun deleteNote(index: Int, id: String?) {
+        val result = listUseCase.deleteNote(index, id)
         handleListDeleteResult(result)
     }
 

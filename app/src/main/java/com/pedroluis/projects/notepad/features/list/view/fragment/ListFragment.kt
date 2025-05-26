@@ -57,7 +57,7 @@ class ListFragment : Fragment() {
     }
 
     private fun setViewModel(): ListViewModel = ViewModelProvider(
-        this, ListViewModelFactory()
+        this, ListViewModelFactory(this.requireActivity().application)
     )[ListViewModel::class.java]
 
     private fun setObserveDataFromBack() {
@@ -104,10 +104,8 @@ class ListFragment : Fragment() {
             )
             adapter = listAdapter
         }
-
-        ItemTouchHelper(
-            setDeleteListItem()
-        ).attachToRecyclerView(binding.listNote)
+        val itemTouchHelper = setDeleteListItem()
+        ItemTouchHelper(itemTouchHelper).attachToRecyclerView(binding.listNote)
     }
 
     private fun setListEmpty() {
@@ -118,11 +116,11 @@ class ListFragment : Fragment() {
     }
 
     private fun setListSuccess(notes: List<NotepadModel>) {
+        listAdapter?.setAddList(notes)
         binding.apply {
             emptyListMessage.visibility = View.GONE
             listNote.visibility = View.VISIBLE
         }
-        listAdapter?.setAddList(notes)
     }
 
     private fun setLastItemListDeleted() {
@@ -142,7 +140,7 @@ class ListFragment : Fragment() {
     private fun updateList(isUpdate: Boolean, navController: NavController) {
         if (isUpdate) {
             viewModel.getNotes()
-            navController.currentBackStackEntry?.savedStateHandle?.remove<String>(UPDATE_LIST)
+            navController.currentBackStackEntry?.savedStateHandle?.remove<Boolean>(UPDATE_LIST)
         }
     }
 
@@ -160,7 +158,6 @@ class ListFragment : Fragment() {
             val position = viewHolder.adapterPosition
             val noteToDelete = listAdapter?.getNoteAt(position)
 
-            viewModel.deleteNote(position, noteToDelete)
             Snackbar.make(
                 binding.root,
                 getString(R.string.notepad_list_deleted),

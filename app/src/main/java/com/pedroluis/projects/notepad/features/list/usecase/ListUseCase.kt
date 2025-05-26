@@ -7,5 +7,5 @@ import kotlinx.coroutines.flow.Flow
 
 internal interface ListUseCase {
     fun getNotes(): ListGetUseCaseState
-    fun deleteNote(index:Int, item: NotepadModel?): ListDeleteUseCaseState
+    fun deleteNote(index:Int, id: String?): ListDeleteUseCaseState
 }
