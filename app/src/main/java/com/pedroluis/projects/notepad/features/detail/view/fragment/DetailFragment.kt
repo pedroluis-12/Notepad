@@ -25,7 +25,7 @@ class DetailFragment : Fragment() {
     private val binding get() = _binding as NotepadDetailFragmentBinding
 
     private val viewModel: DetailViewModel by lazy { setViewModel() }
-    private var idNote: Int? = null
+    private var idNote: String? = null
 
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?
@@ -43,7 +43,7 @@ class DetailFragment : Fragment() {
     }
 
     private fun setViews() {
-        val id = arguments?.getInt(ID_FROM_LIST)
+        val id = arguments?.getString(ID_FROM_LIST)
         val title = arguments?.getString(TITLE_FROM_LIST)
         val description = arguments?.getString(DESCRIPTION_FROM_LIST)
 
@@ -57,6 +57,7 @@ class DetailFragment : Fragment() {
     private fun setListeners() {
         binding.saveButton.setOnClickListener {
             viewModel.saveNote(
+                id = idNote,
                 title = binding.titleEditText.text.toString().trim(),
                 description = binding.descriptionEditText.text.toString().trim()
             )
@@ -82,7 +83,7 @@ class DetailFragment : Fragment() {
     }
 
     private fun setViewModel() = ViewModelProvider(
-        this, DetailViewModelFactory()
+        this, DetailViewModelFactory(this.requireActivity().application)
     )[DetailViewModel::class.java]
 
     private fun setObserveDetailResult() {

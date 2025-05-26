@@ -6,7 +6,7 @@ import kotlinx.coroutines.flow.Flow
 internal interface DetailUseCase {
 
     fun saveNote(
-        index: Int? = null,
+        index: String? = null,
         title: String,
         description: String
     ): DetailUseCaseState
