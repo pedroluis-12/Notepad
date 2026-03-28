@@ -1,42 +1,42 @@
 package com.pedroluis.projects.notepad.features.detail.viewmodel
 
-import androidx.lifecycle.LiveData
-import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.pedroluis.projects.notepad.features.detail.usecase.DetailUseCase
 import com.pedroluis.projects.notepad.features.detail.usecase.state.DetailUseCaseState
 import com.pedroluis.projects.notepad.features.detail.viewmodel.state.DetailViewState
-import kotlinx.coroutines.cancel
-import kotlinx.coroutines.flow.MutableSharedFlow
-import kotlinx.coroutines.flow.SharedFlow
+import kotlinx.coroutines.flow.MutableStateFlow
+import kotlinx.coroutines.flow.StateFlow
+import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.launch
 
 internal class DetailViewModel(
     private val detailUseCase: DetailUseCase
 ): ViewModel() {
 
-    private val _detailResult = MutableLiveData<DetailViewState>()
-    val dataResult: LiveData<DetailViewState> = _detailResult
+    private val _detailResult = MutableStateFlow<DetailViewState>(DetailViewState.Idle)
+    val dataResult: StateFlow<DetailViewState> = _detailResult.asStateFlow()
 
     fun saveNote(id: String? = null, title: String, description: String) {
-        val result = detailUseCase.saveNote(id, title, description)
-        handleDetailResult(result)
+        viewModelScope.launch {
+            val result = detailUseCase.saveNote(id, title, description)
+            handleDetailResult(result)
+        }
     }
 
     private fun handleDetailResult(result: DetailUseCaseState) {
-        when (result) {
+        _detailResult.value = when (result) {
             DetailUseCaseState.ErrorTitle ->
-                _detailResult.value = DetailViewState.DisplayErrorTitle
+                DetailViewState.DisplayErrorTitle
 
             DetailUseCaseState.ErrorDescription ->
-                _detailResult.value = DetailViewState.DisplayErrorDescription
+                DetailViewState.DisplayErrorDescription
 
             DetailUseCaseState.ErrorGeneral ->
-                _detailResult.value = DetailViewState.DisplayErrorGeneral
+                DetailViewState.DisplayErrorGeneral
 
             DetailUseCaseState.Success ->
-                _detailResult.value = DetailViewState.DisplaySuccess
+                DetailViewState.DisplaySuccess
         }
     }
 }

@@ -1,52 +1,57 @@
 package com.pedroluis.projects.notepad.features.list.viewmodel
 
-import androidx.lifecycle.LiveData
-import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
-import com.pedroluis.projects.notepad.commons.model.NotepadModel
+import androidx.lifecycle.viewModelScope
 import com.pedroluis.projects.notepad.features.list.usecase.ListUseCase
 import com.pedroluis.projects.notepad.features.list.usecase.state.ListDeleteUseCaseState
 import com.pedroluis.projects.notepad.features.list.usecase.state.ListGetUseCaseState
 import com.pedroluis.projects.notepad.features.list.viewmodel.state.ListDeleteViewState
 import com.pedroluis.projects.notepad.features.list.viewmodel.state.ListGetViewState
-
+import kotlinx.coroutines.flow.MutableStateFlow
+import kotlinx.coroutines.flow.StateFlow
+import kotlinx.coroutines.flow.asStateFlow
+import kotlinx.coroutines.launch
 
 internal class ListViewModel(
     private val listUseCase: ListUseCase
 ) : ViewModel() {
 
-    private val _listGetResult = MutableLiveData<ListGetViewState>()
-    val listGetResult: LiveData<ListGetViewState> = _listGetResult
+    private val _listGetResult = MutableStateFlow<ListGetViewState>(ListGetViewState.Idle)
+    val listGetResult: StateFlow<ListGetViewState> = _listGetResult.asStateFlow()
 
-    private val _listDeleteResult = MutableLiveData<ListDeleteViewState>()
-    val listDeleteResult: LiveData<ListDeleteViewState> = _listDeleteResult
+    private val _listDeleteResult = MutableStateFlow<ListDeleteViewState>(ListDeleteViewState.Idle)
+    val listDeleteResult: StateFlow<ListDeleteViewState> = _listDeleteResult.asStateFlow()
 
     fun getNotes() {
-        val result = listUseCase.getNotes()
-        handleListGetResult(result)
+        viewModelScope.launch {
+            val result = listUseCase.getNotes()
+            handleListGetResult(result)
+        }
     }
 
     fun deleteNote(index: Int, id: String?) {
-        val result = listUseCase.deleteNote(index, id)
-        handleListDeleteResult(result)
+        viewModelScope.launch {
+            val result = listUseCase.deleteNote(index, id)
+            handleListDeleteResult(result)
+        }
     }
 
     private fun handleListGetResult(result: ListGetUseCaseState) {
-        when (result) {
+        _listGetResult.value = when (result) {
             is ListGetUseCaseState.Success ->
-                _listGetResult.value = ListGetViewState.DisplaySuccess(result.notes)
+                ListGetViewState.DisplaySuccess(result.notes)
 
             is ListGetUseCaseState.EmptyList ->
-                _listGetResult.value = ListGetViewState.DisplayEmptyList
+                ListGetViewState.DisplayEmptyList
         }
     }
 
     private fun handleListDeleteResult(result: ListDeleteUseCaseState) {
-        when (result) {
+        _listDeleteResult.value = when (result) {
             is ListDeleteUseCaseState.DeleteSuccess ->
-                _listDeleteResult.value = ListDeleteViewState.DisplayDeleteSuccess(result.index)
+                ListDeleteViewState.DisplayDeleteSuccess(result.index)
             is ListDeleteUseCaseState.Error ->
-                _listDeleteResult.value = ListDeleteViewState.DisplayError
+                ListDeleteViewState.DisplayError
         }
     }
 }

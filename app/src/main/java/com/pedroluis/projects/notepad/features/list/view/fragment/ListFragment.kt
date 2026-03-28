@@ -6,30 +6,22 @@ import android.view.View
 import android.view.ViewGroup
 import androidx.fragment.app.Fragment
 import androidx.lifecycle.Lifecycle
-import androidx.lifecycle.ViewModelProvider
-import androidx.lifecycle.flowWithLifecycle
 import androidx.lifecycle.lifecycleScope
 import androidx.lifecycle.repeatOnLifecycle
-import androidx.navigation.NavController
 import androidx.navigation.fragment.findNavController
 import androidx.recyclerview.widget.ItemTouchHelper
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import com.google.android.material.snackbar.Snackbar
 import com.pedroluis.projects.notepad.R
-import com.pedroluis.projects.notepad.commons.UPDATE_LIST
 import com.pedroluis.projects.notepad.commons.model.NotepadModel
 import com.pedroluis.projects.notepad.databinding.NotepadListFragmentBinding
 import com.pedroluis.projects.notepad.features.list.view.adapter.ListNoteAdapter
 import com.pedroluis.projects.notepad.features.list.viewmodel.ListViewModel
-import com.pedroluis.projects.notepad.features.list.viewmodel.factory.ListViewModelFactory
 import com.pedroluis.projects.notepad.features.list.viewmodel.state.ListDeleteViewState
 import com.pedroluis.projects.notepad.features.list.viewmodel.state.ListGetViewState
-import kotlinx.coroutines.flow.collect
-import kotlinx.coroutines.flow.collectLatest
-import kotlinx.coroutines.flow.launchIn
-import kotlinx.coroutines.flow.onEach
 import kotlinx.coroutines.launch
+import org.koin.androidx.viewmodel.ext.android.viewModel
 
 private const val INDEX_ZERO = 0
 
@@ -39,7 +31,7 @@ class ListFragment : Fragment() {
     private val binding get() = _binding as NotepadListFragmentBinding
 
     private var listAdapter: ListNoteAdapter? = null
-    private val viewModel by lazy { setViewModel() }
+    private val viewModel: ListViewModel by viewModel()
 
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
@@ -53,33 +45,38 @@ class ListFragment : Fragment() {
         super.onViewCreated(view, savedInstanceState)
 
         setViews()
-
         setObserveListGetViewModel()
         setObserveListDeleteViewModel()
 
         viewModel.getNotes()
     }
 
-    private fun setViewModel(): ListViewModel = ViewModelProvider(
-        this, ListViewModelFactory(this.requireActivity().application)
-    )[ListViewModel::class.java]
-
     private fun setObserveListGetViewModel() {
-        viewModel.listGetResult.observe(viewLifecycleOwner) { value ->
-            when (value) {
-                is ListGetViewState.DisplaySuccess -> setListSuccess(value.notes)
-                is ListGetViewState.DisplayEmptyList -> setListEmpty()
+        viewLifecycleOwner.lifecycleScope.launch {
+            viewLifecycleOwner.repeatOnLifecycle(Lifecycle.State.STARTED) {
+                viewModel.listGetResult.collect { value ->
+                    when (value) {
+                        is ListGetViewState.DisplaySuccess -> setListSuccess(value.notes)
+                        is ListGetViewState.DisplayEmptyList -> setListEmpty()
+                        is ListGetViewState.Idle -> Unit
+                    }
+                }
             }
         }
     }
 
     private fun setObserveListDeleteViewModel() {
-        viewModel.listDeleteResult.observe(viewLifecycleOwner) { value ->
-            when (value) {
-                is ListDeleteViewState.DisplayDeleteSuccess ->
-                   viewModel.getNotes()
-                is ListDeleteViewState.DisplayError ->
-                    setItemListDeletedError()
+        viewLifecycleOwner.lifecycleScope.launch {
+            viewLifecycleOwner.repeatOnLifecycle(Lifecycle.State.STARTED) {
+                viewModel.listDeleteResult.collect { value ->
+                    when (value) {
+                        is ListDeleteViewState.DisplayDeleteSuccess ->
+                           viewModel.getNotes()
+                        is ListDeleteViewState.DisplayError ->
+                            setItemListDeletedError()
+                        is ListDeleteViewState.Idle -> Unit
+                    }
+                }
             }
         }
     }
