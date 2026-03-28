@@ -3,6 +3,6 @@ package com.pedroluis.projects.notepad.features.list.repository
 import com.pedroluis.projects.notepad.commons.model.NotepadModel
 
 internal interface ListRepository {
-    fun getNotes(): List<NotepadModel>
-    fun deleteNote(id: String)
+    suspend fun getNotes(): List<NotepadModel>
+    suspend fun deleteNote(id: String)
 }

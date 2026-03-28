@@ -7,11 +7,10 @@ internal class ListRepositoryImpl(
     private val preferencesData: PreferencesData
 ) : ListRepository {
 
-    override fun getNotes(): List<NotepadModel> {
-        return preferencesData.getNotes()
-    }
+    override suspend fun getNotes(): List<NotepadModel> =
+        preferencesData.getNotes()
 
-    override fun deleteNote(id: String) {
+    override suspend fun deleteNote(id: String) {
         preferencesData.deleteNote(id)
     }
 }

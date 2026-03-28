@@ -8,7 +8,7 @@ internal class ListUseCaseImpl(
     private val repository: ListRepository
 ) : ListUseCase {
 
-    override fun getNotes(): ListGetUseCaseState {
+    override suspend fun getNotes(): ListGetUseCaseState {
         val listNotes = repository.getNotes()
         return if (listNotes.isEmpty()) {
             ListGetUseCaseState.EmptyList
@@ -17,7 +17,7 @@ internal class ListUseCaseImpl(
         }
     }
 
-    override fun deleteNote(index: Int, id: String?): ListDeleteUseCaseState {
+    override suspend fun deleteNote(index: Int, id: String?): ListDeleteUseCaseState {
         return if (id != null) {
             repository.deleteNote(id)
             ListDeleteUseCaseState.DeleteSuccess(index)

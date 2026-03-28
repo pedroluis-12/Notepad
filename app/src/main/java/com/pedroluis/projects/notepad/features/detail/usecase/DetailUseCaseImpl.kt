@@ -7,7 +7,7 @@ internal class DetailUseCaseImpl(
     private val repository: DetailRepository
 ) : DetailUseCase {
 
-    override fun saveNote(index: String?, title: String, description: String) = when {
+    override suspend fun saveNote(index: String?, title: String, description: String) = when {
         title.trim().isEmpty() && description.trim().isEmpty() ->
             DetailUseCaseState.ErrorGeneral
 
@@ -20,7 +20,7 @@ internal class DetailUseCaseImpl(
         else -> setupSaveMode(index, title, description)
     }
 
-    private fun setupSaveMode(
+    private suspend fun setupSaveMode(
         id: String?, title: String, description: String
     ): DetailUseCaseState.Success {
         if (id != null) {
