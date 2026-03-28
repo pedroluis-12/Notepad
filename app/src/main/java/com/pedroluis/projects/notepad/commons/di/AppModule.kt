@@ -12,7 +12,7 @@ import com.pedroluis.projects.notepad.features.list.usecase.ListUseCase
 import com.pedroluis.projects.notepad.features.list.usecase.ListUseCaseImpl
 import com.pedroluis.projects.notepad.features.list.viewmodel.ListViewModel
 import org.koin.android.ext.koin.androidContext
-import org.koin.androidx.viewmodel.dsl.viewModel
+import org.koin.core.module.dsl.viewModel
 import org.koin.dsl.module
 
 val appModule = module {
