@@ -17,7 +17,7 @@ private val NOTEPAD_LIST_KEY = stringPreferencesKey("notepad_list")
 
 private val Context.dataStore: DataStore<Preferences> by preferencesDataStore(name = NOTEPAD_PREFERENCES)
 
-internal class PreferencesData(private val context: Context) {
+internal class NotepadPreferencesData(private val context: Context) {
 
     private val gson = Gson()
 

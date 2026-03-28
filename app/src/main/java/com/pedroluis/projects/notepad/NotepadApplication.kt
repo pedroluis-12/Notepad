@@ -1,7 +1,7 @@
 package com.pedroluis.projects.notepad
 
 import android.app.Application
-import com.pedroluis.projects.notepad.commons.di.appModule
+import com.pedroluis.projects.notepad.commons.di.notepadModule
 import org.koin.android.ext.koin.androidContext
 import org.koin.android.ext.koin.androidLogger
 import org.koin.core.context.startKoin
@@ -12,7 +12,7 @@ class NotepadApplication : Application() {
         startKoin {
             androidLogger()
             androidContext(this@NotepadApplication)
-            modules(appModule)
+            modules(notepadModule)
         }
     }
 }

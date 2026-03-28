@@ -1,6 +1,6 @@
 package com.pedroluis.projects.notepad.commons.di
 
-import com.pedroluis.projects.notepad.commons.data.PreferencesData
+import com.pedroluis.projects.notepad.commons.data.NotepadPreferencesData
 import com.pedroluis.projects.notepad.features.detail.repository.DetailRepository
 import com.pedroluis.projects.notepad.features.detail.repository.DetailRepositoryImpl
 import com.pedroluis.projects.notepad.features.detail.usecase.DetailUseCase
@@ -15,8 +15,8 @@ import org.koin.android.ext.koin.androidContext
 import org.koin.core.module.dsl.viewModel
 import org.koin.dsl.module
 
-val appModule = module {
-    single { PreferencesData(androidContext()) }
+val notepadModule = module {
+    single { NotepadPreferencesData(androidContext()) }
 
     // List feature
     single<ListRepository> { ListRepositoryImpl(get()) }

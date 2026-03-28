@@ -1,4 +1,4 @@
-package com.pedroluis.projects.notepad
+package com.pedroluis.projects.notepad.features
 
 import android.os.Bundle
 import androidx.appcompat.app.AppCompatActivity
@@ -7,6 +7,7 @@ import androidx.navigation.fragment.NavHostFragment
 import androidx.navigation.ui.AppBarConfiguration
 import androidx.navigation.ui.navigateUp
 import androidx.navigation.ui.setupActionBarWithNavController
+import com.pedroluis.projects.notepad.R
 import com.pedroluis.projects.notepad.databinding.NotepadMainActivityBinding
 
 class MainActivity : AppCompatActivity() {

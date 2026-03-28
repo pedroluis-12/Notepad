@@ -1,11 +1,11 @@
 package com.pedroluis.projects.notepad.features.detail.repository
 
-import com.pedroluis.projects.notepad.commons.data.PreferencesData
+import com.pedroluis.projects.notepad.commons.data.NotepadPreferencesData
 import com.pedroluis.projects.notepad.commons.model.NotepadModel
 import java.util.UUID
 
 internal class DetailRepositoryImpl(
-    private val preferencesData: PreferencesData
+    private val preferencesData: NotepadPreferencesData
 ) : DetailRepository {
 
     override suspend fun saveNote(title: String, description: String) {
