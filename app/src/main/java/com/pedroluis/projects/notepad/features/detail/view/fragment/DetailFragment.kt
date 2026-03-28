@@ -7,24 +7,22 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import androidx.fragment.app.Fragment
-import androidx.lifecycle.ViewModelProvider
 import androidx.navigation.fragment.findNavController
 import com.pedroluis.projects.notepad.R
+import com.pedroluis.projects.notepad.commons.DESCRIPTION_FROM_LIST
 import com.pedroluis.projects.notepad.commons.ID_FROM_LIST
 import com.pedroluis.projects.notepad.commons.TITLE_FROM_LIST
-import com.pedroluis.projects.notepad.commons.UPDATE_LIST
-import com.pedroluis.projects.notepad.commons.DESCRIPTION_FROM_LIST
 import com.pedroluis.projects.notepad.databinding.NotepadDetailFragmentBinding
 import com.pedroluis.projects.notepad.features.detail.viewmodel.DetailViewModel
-import com.pedroluis.projects.notepad.features.detail.viewmodel.factory.DetailViewModelFactory
 import com.pedroluis.projects.notepad.features.detail.viewmodel.state.DetailViewState
+import org.koin.androidx.viewmodel.ext.android.viewModel
 
 class DetailFragment : Fragment() {
 
     private var _binding: NotepadDetailFragmentBinding? = null
     private val binding get() = _binding as NotepadDetailFragmentBinding
 
-    private val viewModel: DetailViewModel by lazy { setViewModel() }
+    private val viewModel: DetailViewModel by viewModel()
     private var idNote: String? = null
 
     override fun onCreateView(
@@ -81,10 +79,6 @@ class DetailFragment : Fragment() {
             override fun afterTextChanged(s: Editable?) {}
         })
     }
-
-    private fun setViewModel() = ViewModelProvider(
-        this, DetailViewModelFactory(this.requireActivity().application)
-    )[DetailViewModel::class.java]
 
     private fun setObserveDetailResult() {
         viewModel.dataResult.observe(viewLifecycleOwner) { value ->
