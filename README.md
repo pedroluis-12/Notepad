@@ -10,14 +10,16 @@ Este é um projeto de demonstração desenvolvido para fins de estudo, focado na
 
 ### 🚀 Tecnologias e Conceitos
 - **Arquitetura Clean (MVVM)**: Separação clara de responsabilidades entre as camadas de apresentação, domínio e dados.
+- **Single Activity Pattern**: O projeto utiliza uma única Activity (`MainActivity`) que gerencia a navegação entre múltiplos Fragments via **Jetpack Navigation Component**.
 - **Injeção de Dependência (Koin)**: Gerenciamento eficiente de dependências para facilitar a testabilidade e o desacoplamento.
 - **Cache Local (DataStore)**: Persistência de dados assíncrona e segura, substituindo o antigo SharedPreferences.
 - **Paralelismo e Reatividade**: Uso intensivo de **Kotlin Coroutines** para operações assíncronas e **StateFlow** para emissão de estados de UI reativos.
-- **Testes Unitários**: Cobertura de lógica de negócio utilizando **MockK** e **Turbine**.
+- **Testes Unitários e Instrumentados**: Cobertura de lógica de negócio e fluxos de UI utilizando **MockK**, **Turbine** e **Espresso**.
 
 ### 📂 Descrição das Classes Principais
 
 #### 🏛️ Camada de Apresentação (Presentation)
+- **`MainActivity`**: Activity única que serve como host para o gráfico de navegação do aplicativo.
 - **`ListFragment` / `DetailFragment`**: Responsáveis por renderizar a UI e observar as mudanças de estado emitidas pelas ViewModels usando `repeatOnLifecycle`.
 - **`ListViewModel` / `DetailViewModel`**: Gerenciam o estado da tela, processam eventos da UI e interagem com os UseCases. Utilizam `StateFlow` para expor dados.
 - **`ListNoteAdapter`**: Gerencia a exibição da lista de notas no RecyclerView.
@@ -42,14 +44,16 @@ This is a demonstration project developed for study purposes, focusing on the im
 
 ### 🚀 Technologies and Concepts
 - **Clean Architecture (MVVM)**: Clear separation of concerns between presentation, domain, and data layers.
+- **Single Activity Pattern**: The project uses a single Activity (`MainActivity`) that manages navigation between multiple Fragments via the **Jetpack Navigation Component**.
 - **Dependency Injection (Koin)**: Efficient dependency management to facilitate testability and decoupling.
 - **Local Cache (DataStore)**: Asynchronous and safe data persistence, replacing the legacy SharedPreferences.
 - **Parallelism and Reactivity**: Intensive use of **Kotlin Coroutines** for asynchronous operations and **StateFlow** for reactive UI state emission.
-- **Unit Testing**: Business logic coverage using **MockK** and **Turbine**.
+- **Unit and Instrumented Testing**: Business logic and UI flow coverage using **MockK**, **Turbine**, and **Espresso**.
 
 ### 📂 Main Classes Description
 
 #### 🏛️ Presentation Layer
+- **`MainActivity`**: Single activity serving as the host for the application's navigation graph.
 - **`ListFragment` / `DetailFragment`**: Responsible for rendering the UI and observing state changes emitted by the ViewModels using `repeatOnLifecycle`.
 - **`ListViewModel` / `DetailViewModel`**: Manage screen state, process UI events, and interact with UseCases. They use `StateFlow` to expose data.
 - **`ListNoteAdapter`**: Manages the display of the notes list in the RecyclerView.
