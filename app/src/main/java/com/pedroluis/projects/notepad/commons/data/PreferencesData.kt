@@ -11,9 +11,10 @@ private const val NOTEPAD_LIST = "notepad_list"
 
 internal class PreferencesData(context: Context) {
 
-    private val sharedPreferences = context.getSharedPreferences(NOTEPAD_PREFERENCES, Context.MODE_PRIVATE)
+    private val sharedPreferences =
+        context.getSharedPreferences(NOTEPAD_PREFERENCES, Context.MODE_PRIVATE)
     private val gson = Gson()
-    
+
     fun saveUser(note: NotepadModel) {
         val notes = getNotes().toMutableList()
         val index = notes.indexOfFirst { it.id == note.id }
@@ -31,10 +32,6 @@ internal class PreferencesData(context: Context) {
         val json = sharedPreferences.getString(NOTEPAD_LIST, null) ?: return emptyList()
         val type = object : TypeToken<List<NotepadModel>>() {}.type
         return gson.fromJson(json, type)
-    }
-
-    fun getNoteById(id: String): NotepadModel? {
-        return getNotes().find { it.id == id }
     }
 
     fun deleteNote(id: String) {

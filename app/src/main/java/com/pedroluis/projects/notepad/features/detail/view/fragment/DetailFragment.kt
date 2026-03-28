@@ -7,6 +7,9 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import androidx.fragment.app.Fragment
+import androidx.lifecycle.Lifecycle
+import androidx.lifecycle.lifecycleScope
+import androidx.lifecycle.repeatOnLifecycle
 import androidx.navigation.fragment.findNavController
 import com.pedroluis.projects.notepad.R
 import com.pedroluis.projects.notepad.commons.DESCRIPTION_FROM_LIST
@@ -15,6 +18,7 @@ import com.pedroluis.projects.notepad.commons.TITLE_FROM_LIST
 import com.pedroluis.projects.notepad.databinding.NotepadDetailFragmentBinding
 import com.pedroluis.projects.notepad.features.detail.viewmodel.DetailViewModel
 import com.pedroluis.projects.notepad.features.detail.viewmodel.state.DetailViewState
+import kotlinx.coroutines.launch
 import org.koin.androidx.viewmodel.ext.android.viewModel
 
 class DetailFragment : Fragment() {
@@ -81,12 +85,17 @@ class DetailFragment : Fragment() {
     }
 
     private fun setObserveDetailResult() {
-        viewModel.dataResult.observe(viewLifecycleOwner) { value ->
-            when (value) {
-                is DetailViewState.DisplaySuccess -> setupSuccess()
-                is DetailViewState.DisplayErrorGeneral -> setupErrorGeneral()
-                is DetailViewState.DisplayErrorTitle -> setupErrorTitle()
-                is DetailViewState.DisplayErrorDescription -> setupErrorDescription()
+        viewLifecycleOwner.lifecycleScope.launch {
+            viewLifecycleOwner.repeatOnLifecycle(Lifecycle.State.STARTED) {
+                viewModel.dataResult.collect { value ->
+                    when (value) {
+                        is DetailViewState.DisplaySuccess -> setupSuccess()
+                        is DetailViewState.DisplayErrorGeneral -> setupErrorGeneral()
+                        is DetailViewState.DisplayErrorTitle -> setupErrorTitle()
+                        is DetailViewState.DisplayErrorDescription -> setupErrorDescription()
+                        is DetailViewState.Idle -> Unit
+                    }
+                }
             }
         }
     }

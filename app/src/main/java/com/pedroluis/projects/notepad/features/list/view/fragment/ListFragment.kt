@@ -5,6 +5,9 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import androidx.fragment.app.Fragment
+import androidx.lifecycle.Lifecycle
+import androidx.lifecycle.lifecycleScope
+import androidx.lifecycle.repeatOnLifecycle
 import androidx.navigation.fragment.findNavController
 import androidx.recyclerview.widget.ItemTouchHelper
 import androidx.recyclerview.widget.LinearLayoutManager
@@ -17,6 +20,7 @@ import com.pedroluis.projects.notepad.features.list.view.adapter.ListNoteAdapter
 import com.pedroluis.projects.notepad.features.list.viewmodel.ListViewModel
 import com.pedroluis.projects.notepad.features.list.viewmodel.state.ListDeleteViewState
 import com.pedroluis.projects.notepad.features.list.viewmodel.state.ListGetViewState
+import kotlinx.coroutines.launch
 import org.koin.androidx.viewmodel.ext.android.viewModel
 
 private const val INDEX_ZERO = 0
@@ -41,7 +45,6 @@ class ListFragment : Fragment() {
         super.onViewCreated(view, savedInstanceState)
 
         setViews()
-
         setObserveListGetViewModel()
         setObserveListDeleteViewModel()
 
@@ -49,21 +52,31 @@ class ListFragment : Fragment() {
     }
 
     private fun setObserveListGetViewModel() {
-        viewModel.listGetResult.observe(viewLifecycleOwner) { value ->
-            when (value) {
-                is ListGetViewState.DisplaySuccess -> setListSuccess(value.notes)
-                is ListGetViewState.DisplayEmptyList -> setListEmpty()
+        viewLifecycleOwner.lifecycleScope.launch {
+            viewLifecycleOwner.repeatOnLifecycle(Lifecycle.State.STARTED) {
+                viewModel.listGetResult.collect { value ->
+                    when (value) {
+                        is ListGetViewState.DisplaySuccess -> setListSuccess(value.notes)
+                        is ListGetViewState.DisplayEmptyList -> setListEmpty()
+                        is ListGetViewState.Idle -> Unit
+                    }
+                }
             }
         }
     }
 
     private fun setObserveListDeleteViewModel() {
-        viewModel.listDeleteResult.observe(viewLifecycleOwner) { value ->
-            when (value) {
-                is ListDeleteViewState.DisplayDeleteSuccess ->
-                   viewModel.getNotes()
-                is ListDeleteViewState.DisplayError ->
-                    setItemListDeletedError()
+        viewLifecycleOwner.lifecycleScope.launch {
+            viewLifecycleOwner.repeatOnLifecycle(Lifecycle.State.STARTED) {
+                viewModel.listDeleteResult.collect { value ->
+                    when (value) {
+                        is ListDeleteViewState.DisplayDeleteSuccess ->
+                           viewModel.getNotes()
+                        is ListDeleteViewState.DisplayError ->
+                            setItemListDeletedError()
+                        is ListDeleteViewState.Idle -> Unit
+                    }
+                }
             }
         }
     }
